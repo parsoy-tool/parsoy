@@ -1,0 +1,6 @@
+[submodule "tools/parsoy-analyzer"]
+	path = tools/parsoy-analyzer
+	url = https://github.com/parsoy-tool/parsoy-analyzer
+[submodule "tools/parsoy-web"]
+	path = tools/parsoy-web
+	url = https://github.com/parsoy-tool/parsoy-web

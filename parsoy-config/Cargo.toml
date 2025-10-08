@@ -1,0 +1,11 @@
+[package]
+name = "parsoy-config"
+version = "0.1.0"
+edition = { workspace = true }
+authors = { workspace = true }
+description = "Analyzing config parsoy"
+license = { workspace = true }
+repository = { workspace = true }
+
+[dependencies]
+toml = "*"

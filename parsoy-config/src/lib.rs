@@ -1,0 +1,1 @@
+//! The crate for analyzing `.parsoy.toml` / `Parsoy.toml`.

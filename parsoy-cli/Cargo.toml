@@ -3,8 +3,16 @@ name = "parsoy-cli"
 version = "0.1.0"
 edition = { workspace = true }
 authors = { workspace = true }
-description = { workspace = true }
+description = "A generator and cli for parsoy"
 license = { workspace = true }
 repository = { workspace = true }
+
+[lib]
+name = "parsoy"
+path = "./src/lib.rs"
+
+[[bin]]
+name = "parsoy"
+path = "./src/main.rs"
 
 [dependencies]

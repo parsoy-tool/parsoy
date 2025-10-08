@@ -3,9 +3,10 @@ name = "parsoy-config"
 version = "0.1.0"
 edition = { workspace = true }
 authors = { workspace = true }
-description = "Analyzing config parsoy"
+description = "Manages the reading and serialization of parsoy configuration files."
 license = { workspace = true }
 repository = { workspace = true }
 
 [dependencies]
+serde = { version = "*", features = ["derive"] }
 toml = "*"

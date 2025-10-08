@@ -16,3 +16,4 @@ name = "parsoy"
 path = "./src/main.rs"
 
 [dependencies]
+termcolor = "*"

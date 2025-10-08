@@ -1,0 +1,14 @@
+[workspace]
+resolver = "3"
+members = ["parsoy-*"]
+
+[workspace.package]
+edition = "2024"
+authors = ["jclermonttt <jer.clermont@gmail.com>"]
+description = "A fast, modern parser and lexer generator built in Rust for robust language systems."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/parsoy-tool/parsoy"
+
+[workspace.dependencies]
+parsoy-runtime = { version = "*", path = "parsoy-runtime" }
+parsoy-util = { version = "*", path = "parsoy-util" }

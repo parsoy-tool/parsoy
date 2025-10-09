@@ -16,4 +16,7 @@ name = "parsoy"
 path = "./src/main.rs"
 
 [dependencies]
+clap = { version = "*", features = ["derive"] }
 termcolor = "*"
+
+parsoy-project = { workspace = true }

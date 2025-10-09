@@ -13,10 +13,13 @@ path = "./src/lib.rs"
 
 [[bin]]
 name = "parsoy"
-path = "./src/main.rs"
+path = "./src/bin/main.rs"
+required-features = ["cli"]
 
 [dependencies]
-clap = { version = "*", features = ["derive"] }
-termcolor = "*"
+tokio = { version = "*", features = ["full"] }
+clap = { version = "*", features = ["derive"], optional = true }
 
-parsoy-project = { workspace = true }
+[features]
+default = ["cli"]
+cli = ["clap"]

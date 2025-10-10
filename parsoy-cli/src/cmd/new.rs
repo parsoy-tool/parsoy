@@ -16,6 +16,10 @@ pub async fn run_new_command(
     }
 }
 
-async fn run_new_interpreter() -> Result<(), Box<dyn std::error::Error>> {}
+async fn run_new_interpreter() -> Result<(), Box<dyn std::error::Error>> {
+todo!();
+}
 
-async fn run_new_compiler() -> Result<(), Box<dyn std::error::Error>> {}
+async fn run_new_compiler() -> Result<(), Box<dyn std::error::Error>> {
+todo!();
+}

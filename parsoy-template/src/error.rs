@@ -6,6 +6,9 @@ pub type Result<T> = std::result::Result<T, TemplateError>;
 
 #[derive(Debug, Display, Error, From)]
 pub enum TemplateError {
+    #[display("A non-UTF-8 file name has been detected.")]
+    NonUnicode,
+
     #[display(
         "Template variable poorly formatted. [Error: {0:#?}], [file: {1:#?}]",
         _0,

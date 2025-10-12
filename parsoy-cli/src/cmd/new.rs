@@ -1,21 +1,42 @@
+use crate::{Template, Vcs, write_template_file};
 use std::path::PathBuf;
 
-use crate::{ProjectTemplate, handle_error};
-
-pub async fn run_new_command(
+#[cfg(feature = "cli")]
+pub async fn handle_new_command(
     project_name: String,
-    template: ProjectTemplate,
+    _template: Template,
+    _vcs: Vcs,
+    verbose: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let project_dir = PathBuf::from(&project_name);
+    let target_path =
+        PathBuf::from("./").join(&project_name);
 
-    std::fs::create_dir_all(&project_dir).unwrap();
+    generate_root_files(
+        &target_path,
+        project_name,
+        verbose,
+    )
+    .await?;
 
-    match template {
-        ProjectTemplate::Compiler => run_new_compiler().await,
-        ProjectTemplate::Interpreter => run_new_interpreter().await,
-    }
+    Ok(())
 }
 
-async fn run_new_interpreter() -> Result<(), Box<dyn std::error::Error>> {}
+pub(self) async fn setup_project_root()
+-> Result<(), Box<dyn std::error::Error>> {
+    todo!()
+}
 
-async fn run_new_compiler() -> Result<(), Box<dyn std::error::Error>> {}
+pub(self) async fn ensure_directory_exists()
+-> Result<(), Box<dyn std::error::Error>> {
+    todo!()
+}
+
+#[allow(unused_must_use)]
+pub(self) async fn generate_root_files(
+    target_path: &PathBuf,
+    project_name: impl Into<String>,
+    _verbose: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
+   
+    Ok(())
+}

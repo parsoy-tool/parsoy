@@ -19,6 +19,7 @@ required-features = ["cli"]
 [dependencies]
 tokio = { version = "*", features = ["full"] }
 clap = { version = "*", features = ["derive"], optional = true }
+derive_more = { version = "*", features = ["full"] }
 
 [features]
 default = ["cli"]

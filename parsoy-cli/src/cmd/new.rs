@@ -21,6 +21,7 @@ pub async fn handle_new_command(
     Ok(())
 }
 
+<<<<<<< HEAD
 pub(self) async fn setup_project_root()
 -> Result<(), Box<dyn std::error::Error>> {
     todo!()
@@ -39,4 +40,12 @@ pub(self) async fn generate_root_files(
 ) -> Result<(), Box<dyn std::error::Error>> {
    
     Ok(())
+=======
+async fn run_new_interpreter() -> Result<(), Box<dyn std::error::Error>> {
+todo!();
+}
+
+async fn run_new_compiler() -> Result<(), Box<dyn std::error::Error>> {
+todo!();
+>>>>>>> b7813ddb84355b7548cc053776c08c4fb21e4b61
 }

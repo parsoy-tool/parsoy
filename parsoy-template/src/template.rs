@@ -13,12 +13,12 @@
 /// ```rust
 /// use parsoy_template::template::name_starts_with_underscore;
 /// assert_eq!(name_starts_with_underscore("_config.toml"), true);
-/// assert_eq!(name_starts_with_underscore("config.toml"), false);
-/// assert_eq!(name_starts_with_underscore(""), false);
+/// assert_eq!(name_starts_with_underscore("config.toml"), false); // Ignored
+/// assert_eq!(name_starts_with_underscore("_"), false); // Ignored
+/// assert_eq!(name_starts_with_underscore(""), false); // Ignored
 /// ```
-/// 
 pub fn name_starts_with_underscore(name: &str) -> bool {
-    if name.is_empty() {
+    if name.len() <= 1 {
         return false;
     }
     name.starts_with('_')

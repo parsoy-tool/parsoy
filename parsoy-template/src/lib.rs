@@ -4,5 +4,5 @@ pub mod template;
 pub mod macros;
 
 pub use error::*;
-pub use template::*;
 pub use macros::*;
+pub use template::*;

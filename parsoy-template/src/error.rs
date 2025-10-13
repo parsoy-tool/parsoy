@@ -1,47 +1,26 @@
-use derive_more::{Display, Error, From};
-use std::io;
-use std::path::PathBuf;
+use derive_more::From;
 
-pub type Result<T> = std::result::Result<T, TemplateError>;
+pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Display, Error, From)]
-pub enum TemplateError {
-
+#[derive(Debug, From)]
+pub enum Error {
     MissingFilename,
-
-    #[display("A non-UTF-8 file name has been detected.")]
     NonUnicode,
 
-    #[display(
-        "Template variable poorly formatted. [Error: {0:#?}], [file: {1:#?}]",
-        _0,
-        _1
-    )]
-    Parsing(String, PathBuf),
-    #[display(
-        "Missing variable. The key [{0:#?}] was not found in the context for the file: [{1:#?}]",
-        _0,
-        _1
-    )]
-    MissingVariable(String, PathBuf),
-    // Version fonctionnelle : utilise {0} et {1} pour les arguments positionnels
-    // et _0, _1 pour référencer les champs.
-    #[display(
-        "Read/write error on the path. [Path: {0:#?}], [Error: {1:#?}]",
-        _0,
-        _1
-    )]
     #[from]
-    Io(PathBuf, io::Error),
+    WalkDir(walkdir::Error),
 
     #[from]
-    IoGeneric(io::Error),
+    Io(std::io::Error),
 }
 
-pub fn handle_error<E>(error: E)
-where
-    E: std::fmt::Display,
-{
-    eprintln!("{error}");
-    ::std::process::exit(1)
+impl std::fmt::Display for Error {
+    fn fmt(
+        &self,
+        fmt: &mut std::fmt::Formatter<'_>,
+    ) -> std::result::Result<(), std::fmt::Error> {
+        write!(fmt, "{self:?}")
+    }
 }
+
+impl std::error::Error for Error {}

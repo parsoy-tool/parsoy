@@ -1,105 +1,115 @@
-use crate::{Result, TemplateError};
+use walkdir::WalkDir;
 
-/// Derives the final destination name by removing the leading underscore.
-///
-/// This function should only be called if `is_template_path` returned `Ok(true)`.
-///
-/// # Arguments
-///
-/// * `template_path` - A reference to the path (file or directory) to transform.
-///
-/// # Returns
-///
-/// - `Ok(String)`: The final name of the file/directory without the underscore.
-/// - `Err(TemplateError::MissingFilename)`: If the path reference has no name component.
-/// - `Err(TemplateError::NonUnicode)`: If the element's name contains invalid UTF-8 sequences.
-pub fn derive_name<P: AsRef<std::path::Path>>(
-    template_path: P,
-) -> Result<String> {
-    let path_ref = template_path.as_ref();
+use crate::{Error, Result};
+use std::{
+    collections::HashMap,
+    ffi::OsStr,
+    path::{Path, PathBuf},
+};
 
-    let name_os_str = match path_ref.file_name() {
-        Some(s) => s,
-        None => return Err(TemplateError::MissingFilename),
-    };
+pub type TemplateCtxt = HashMap<String, String>;
 
-    let name = match name_os_str.to_str() {
-        Some(s) => s,
-        None => return Err(TemplateError::NonUnicode),
-    };
+pub struct Template {
+    pub root_path: PathBuf,
+    pub items: Vec<TemplateItem>,
+}
 
-    if let Some(stripped_name) = name.strip_prefix('_') {
-        Ok(stripped_name.to_string())
-    } else {
-        Ok(name.to_string())
+impl Template {
+    fn check_root_existence(
+        root_path: &Path,
+    ) -> Result<()> {
+        match std::fs::metadata(root_path) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e.into()),
+        }
+    }
+
+    fn find_items_recursively(
+        root_path: &Path,
+    ) -> Result<Vec<TemplateItem>> {
+        let mut items = Vec::new();
+        for entry_result in WalkDir::new(root_path) {
+            let entry =
+                entry_result.map_err(Error::WalkDir)?;
+            let path = entry.path();
+
+            if path == root_path {
+                continue;
+            }
+
+            if let Some(item) =
+                TemplateItem::try_from_path(path)?
+            {
+                items.push(item);
+            }
+        }
+        Ok(items)
     }
 }
 
-/// Checks if a path element's name starts with an underscore (`_`) and
-/// is a valid template name (i.e., not juste `_` or an empty string).
-///
-/// This function is used for filtering elements during recursive directory traversal.
-///
-/// # Arguments
-///
-/// * `template_path` - A reference to the path (file or directory) to validate.
-///
-/// # Returns
-///
-/// - `Ok(true)`: If the element is a valid template (e.g. `_component`).
-/// - `Ok(false)`: If the element should be ignored (e.g., `src`, `/`, or `config.toml`).
-///
-/// # Examples
-///
-/// ```rust
-/// use std::path::Path;
-/// use parsoy_template::template::is_template_path;
-///
-/// assert_eq!(is_template_path(Path::new("./_item")).unwrap(), true);
-/// assert_eq!(is_template_path(Path::new("./_")).unwrap(), false);
-/// assert_eq!(is_template_path(Path::new("./src")).unwrap(), false);
-/// assert_eq!(is_template_path(Path::new("./")).unwrap(), false);
-/// ```
-pub fn is_template_path<P: AsRef<std::path::Path>>(
-    template_path: P,
-) -> Result<bool> {
-    let path_ref = template_path.as_ref();
-
-    let name_os_str = match path_ref.file_name() {
-        None => return Ok(false),
-        Some(s) => s,
-    };
-
-    let name = match name_os_str.to_str() {
-        Some(s) => s,
-        None => return Err(TemplateError::NonUnicode),
-    };
-
-    Ok(name_starts_with_underscore(name))
+#[derive(Debug, Clone)]
+pub struct TemplateItem {
+    pub source_path: PathBuf,
+    pub final_name: String,
+    pub is_dir: bool,
 }
 
-/// Quickly verifies if a file or directory name begins with an underscore `_`.
-///
-/// # Arguments
-///
-/// * `name` - The name of the file or directory, guaranteed to be valid UTF-8.
-///
-/// # Returns
-///
-/// Returns `true` if the name starts with an underscore, otherwise `false`.
-///
-/// # Examples
-///
-/// ```rust
-/// use parsoy_template::template::name_starts_with_underscore;
-/// assert_eq!(name_starts_with_underscore("_config.toml"), true);
-/// assert_eq!(name_starts_with_underscore("config.toml"), false); // Ignored
-/// assert_eq!(name_starts_with_underscore("_"), false); // Ignored
-/// assert_eq!(name_starts_with_underscore(""), false); // Ignored
-/// ```
-pub fn name_starts_with_underscore(name: &str) -> bool {
-    if name.len() <= 1 {
-        return false;
+impl TemplateItem {
+    fn name_starts_with_underscore(name: &str) -> bool {
+        if name.len() <= 1 {
+            return false;
+        }
+        name.starts_with('_')
     }
-    name.starts_with('_')
+
+    fn get_name_os_str<'a>(
+        path: &'a Path,
+    ) -> Option<&'a OsStr> {
+        path.file_name()
+    }
+
+    fn validate_and_extract_name<'a>(
+        name_os_str: &'a OsStr,
+    ) -> Result<Option<&'a str>> {
+        let name = match name_os_str.to_str() {
+            Some(s) => s,
+            None => return Err(Error::NonUnicode),
+        };
+
+        if Self::name_starts_with_underscore(name) {
+            Ok(Some(name))
+        } else {
+            Ok(None) // Ignored
+        }
+    }
+
+    fn derive_final_name(name: &str) -> String {
+        name.strip_prefix('_')
+            .unwrap_or(name)
+            .to_string()
+    }
+
+    pub fn try_from_path(
+        path: &Path,
+    ) -> Result<Option<Self>> {
+        let name_os_str = match Self::get_name_os_str(path)
+        {
+            Some(s) => s,
+            None => return Ok(None), // Root path ignored,
+        };
+        let name = match Self::validate_and_extract_name(
+            name_os_str,
+        )? {
+            Some(n) => n,
+            None => return Ok(None), // filted name without underscore.
+        };
+
+        let final_name = Self::derive_final_name(name);
+
+        Ok(Some(TemplateItem {
+            source_path: path.to_path_buf(),
+            final_name,
+            is_dir: path.is_dir(),
+        }))
+    }
 }

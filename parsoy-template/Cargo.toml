@@ -1,0 +1,12 @@
+[package]
+name = "parsoy-template"
+version = "0.1.0"
+edition = { workspace = true }
+authors = { workspace = true }
+description = ""
+license = { workspace = true }
+repository = { workspace = true }
+
+[dependencies]
+derive_more = { version = "*", features = ["full"] }
+walkdir = { version = "*" }

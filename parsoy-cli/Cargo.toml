@@ -21,9 +21,6 @@ tokio = { version = "*", features = ["full"] }
 clap = { version = "*", features = ["derive"], optional = true }
 derive_more = { version = "*", features = ["full"] }
 
-## Local
-parsoy-template = { workspace = true }
-
 [features]
 default = ["cli"]
 cli = ["clap"]

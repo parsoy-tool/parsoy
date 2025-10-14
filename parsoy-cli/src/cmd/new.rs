@@ -1,5 +1,4 @@
 use crate::{Template, Vcs};
-use parsoy_template::get_template;
 use std::path::PathBuf;
 
 #[cfg(feature = "cli")]

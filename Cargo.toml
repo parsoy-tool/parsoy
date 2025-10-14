@@ -1,7 +1,6 @@
 [workspace]
 resolver = "3"
 members = ["parsoy-*"]
-exclude = ["examples/mylang/*"]
 
 [workspace.package]
 edition = "2024"
@@ -11,7 +10,3 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/parsoy-tool/parsoy"
 
 [workspace.dependencies]
-parsoy-runtime = { version = "*", path = "parsoy-runtime" }
-parsoy-util = { version = "*", path = "parsoy-util" }
-parsoy-config = { version = "*", path = "parsoy-config" }
-parsoy-project = { version = "*", path = "parsoy-project" } 
